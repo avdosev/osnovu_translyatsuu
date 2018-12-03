@@ -1,0 +1,59 @@
+{
+    "indentation": {
+        "regexp": "^(\\s+)",
+        "skip": true
+    },
+    "comment": {
+        "regexp": "^(--(.*?)\n)",
+        "skip": true
+    },
+    "keywords": {
+        "regexp": "^([A-Za-z]{2,})\\b",
+        "list" : [
+            "from", "until", "loop", "end",
+            "local", "do", "end",
+            "if", "else", "then",
+            "class", "feature", "create",
+            "INTEGER", "REAL", "STRING", "ARRAY",
+            "true", "false"
+        ]       
+    },
+    "ident": {
+        "regexp": "^([a-zA-Z][_a-zA-Z0-9]*)\\b",
+        "link" : "arrayOfIdent"
+    },
+    "operators": {
+        "regexp": "^(([^a-zA-Z0-9_\\s]{2})|(\\W))",
+        "list": [
+            ":=", "+", "-", "*", "/", "//", "\\\\",
+            ">", ">=", "<", "<=", "/=", "="
+        ]
+    },
+    "boolean_operators": {
+        "regexp" : "^(and|or|xor|not)",
+        "list" : ["and", "or", "xor", "not"]
+    },
+    "string_constant": {
+        "regexp": "^((\".*?\"))",
+        "link": "arrayOfConst"
+    },
+    "real_digit_const": {
+        "regexp": "^(\\d*\\.\\d+)\\b",
+        "link": "arrayOfConst"
+    },
+    "int_digit_const": {
+        "regexp": "^(\\d+)\\b",
+        "link": "arrayOfConst"
+    },
+    "separators": {
+        "regexp": "^([[\\])(\\}\\{;,;.:]{1})"
+    },
+    "error": {
+        "regexp": "^(.*?)(?=[\\s]|[\\n])"
+    }
+}
+
+
+
+
+
