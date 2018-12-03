@@ -23,11 +23,13 @@ export function parser(arrayOfTokens, config)
                     currentToken[0] == 'ident' && currentStackSymbol == 'id'||
                     currentToken[0] == 'hex_dig_const' && currentStackSymbol == 'num'||
                     currentToken[0] == 'real_dig_const' && currentStackSymbol == 'num'||
-                    currentToken[0] == 'int_dig_const' && currentStackSymbol == 'num') {
+                    currentToken[0] == 'int_dig_const' && currentStackSymbol == 'num'||
+                    currentToken[0] == 'string_constant' && currentStackSymbol == 'num') {
                 if (currentToken[0] == 'ident' && currentStackSymbol == 'id'||
                     currentToken[0] == 'hex_dig_const' && currentStackSymbol == 'num'||
                     currentToken[0] == 'real_dig_const' && currentStackSymbol == 'num'||
-                    currentToken[0] == 'int_dig_const' && currentStackSymbol == 'num')
+                    currentToken[0] == 'int_dig_const' && currentStackSymbol == 'num'||
+                    currentToken[0] == 'string_constant' && currentStackSymbol == 'num')
                         output.push(currentStackSymbol + " -> " + currentToken[1]);
             }
             else {
@@ -48,7 +50,8 @@ export function parser(arrayOfTokens, config)
 
             if (currentToken[0] == 'hex_dig_const'||
                 currentToken[0] == 'real_dig_const'||
-                currentToken[0] == 'int_dig_const')
+                currentToken[0] == 'int_dig_const'||
+                currentToken[0] == 'string_constant')
                 currentToken = 'num';
 
             if (config[currentStackSymbol]) {
@@ -86,7 +89,7 @@ export function parser(arrayOfTokens, config)
             catch (error) {
                 switch (error) {
                     case 0:
-                        console.log("Ошибка: неожиданный терминал.");
+                        console.log("Ошибка: неожиданный терминал: "  + currentStackSymbol + " " + currentToken  + " " + stack);
                         break;
                     case 1:
                         console.log("Ошибка: ожидался конец строки, а найден символ: " + currentToken);
@@ -101,6 +104,7 @@ export function parser(arrayOfTokens, config)
                     case 4:
                         console.log("Ошибка: не удается найти правило для нетерминала: " + currentStackSymbol);
                 }
+                console.log(output);
                 throw "INVALID";
             }
             if (p[0] == '<') {//если возвращен нетерминал
