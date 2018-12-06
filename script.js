@@ -11,7 +11,7 @@ function main() {
         getDataFromServer("./config/grammar-table.json", get_grammar);
         function get_grammar(grammarTable) {
             var out = compiler(document.querySelector('code.eiffel-language').textContent, lexTable, grammarTable)
-            document.querySelector('code.javascript-language').innerHTML(out);
+            document.querySelector('code.javascript-language').innerHTML = out;
         }
     }
 }

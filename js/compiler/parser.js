@@ -2,7 +2,7 @@ export function parser(arrayOfTokens, config)
 {
     var start = ["<программа>"];
     var currentIndex = 0;
-    var output = [];
+    //var output = [];
 
     function walk(stack) {
         var currentStackSymbol;
@@ -20,17 +20,15 @@ export function parser(arrayOfTokens, config)
                         currentToken[0] == 'real_dig_const' && currentStackSymbol == 'num'||
                         currentToken[0] == 'int_dig_const' && currentStackSymbol == 'num'||
                         currentToken[0] == 'string_constant' && currentStackSymbol == 'num') {
-                    if (currentToken[0] == 'ident' && currentStackSymbol == 'id'||
-                        currentToken[0] == 'hex_dig_const' && currentStackSymbol == 'num'||
-                        currentToken[0] == 'real_dig_const' && currentStackSymbol == 'num'||
-                        currentToken[0] == 'int_dig_const' && currentStackSymbol == 'num'||
-                        currentToken[0] == 'string_constant' && currentStackSymbol == 'num')
-                            output.push(currentStackSymbol + " -> " + currentToken[1]);
-                    
+                        if (currentToken != currentStackSymbol)
+                            console.log(currentStackSymbol + " -> " + currentToken[1]);
+                        else 
+                            console.log(currentStackSymbol, " -> ", currentToken);
                     currentIndex += 1;
                 }
                 else {
-                    console.log("Ошибка: неожиданный терминал: "  + currentStackSymbol + " " + currentToken  + " " + stack);
+                    console.log("Ошибка: неожиданный терминал: "  + currentStackSymbol + ", хотя должен был быть: " + currentToken  + ", содержимое стека: " + stack);
+                    console.log("Текущий индекс: ", currentIndex);
                     throw 0;
                 }
             }
@@ -44,11 +42,12 @@ export function parser(arrayOfTokens, config)
                     currentToken[0] == 'string_constant')
                     currentToken = 'num';
 
-                if (config[currentStackSymbol]) {
-                    if (config[currentStackSymbol][currentToken]) {
+                if (config[currentStackSymbol] !== undefined) {
+                    if (config[currentStackSymbol][currentToken] !== undefined) {
                         var production = config[currentStackSymbol][currentToken];
-                        output.push(currentStackSymbol + " -> " + production);
-                        if (typeof(production)=='object') {
+                        console.log(currentStackSymbol + " -> " + production);
+                        if (typeof(production) == 'object') {
+                            production = production.slice();//бам на нах сука горит ебучий джc почему никто не сказал что массивы так не копируются
                             var newStack = [];
                             while (production.length) {
                                 newStack.push(production.pop());
@@ -77,14 +76,13 @@ export function parser(arrayOfTokens, config)
     }
 
     try {
+        console.log("как происходил анализ: ");
         var ast = walk(start);
     }
     catch (error) {
-        console.log(output);
+        console.log(config);
         return error;
     }
-
-    console.log(output);
     
     return ast;
 }
