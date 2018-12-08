@@ -2,8 +2,13 @@ export function parser(arrayOfTokens, config)
 {
     var start = ["<программа>"];
     var currentIndex = 0;
-    //var output = [];
-
+    var output = [];
+    /*
+    короч считай це интсрукцией
+    "..." - терминал - просто токен
+    "<...>" - нетерминал - он строит наше дерево
+    "<<...>>" - сверхнетерминал - он говорит то как построится наше дерево, можно сказать он настраивает наш парсер
+    */
     function walk(stack) {
         var currentStackSymbol;
         var currentToken;
@@ -13,7 +18,7 @@ export function parser(arrayOfTokens, config)
             currentToken = arrayOfTokens[currentIndex];
             currentStackSymbol = stack.pop();
 
-            if (currentStackSymbol[0]!='<') {// если текущий символ – терминал
+            if (currentStackSymbol[0]!='<' || (currentStackSymbol.length == 1 && currentStackSymbol[0]=='<')) {// если текущий символ – терминал
                 if (currentToken == currentStackSymbol ||
                         currentToken[0] == 'ident' && currentStackSymbol == 'id'||
                         currentToken[0] == 'hex_dig_const' && currentStackSymbol == 'num'||
@@ -21,9 +26,9 @@ export function parser(arrayOfTokens, config)
                         currentToken[0] == 'int_dig_const' && currentStackSymbol == 'num'||
                         currentToken[0] == 'string_constant' && currentStackSymbol == 'num') {
                         if (currentToken != currentStackSymbol)
-                            console.log(currentStackSymbol + " -> " + currentToken[1]);
+                            output.push(currentStackSymbol + " -> " + currentToken[1]);
                         else 
-                            console.log(currentStackSymbol, " -> ", currentToken);
+                            output.push(currentToken);
                     currentIndex += 1;
                 }
                 else {
@@ -45,15 +50,29 @@ export function parser(arrayOfTokens, config)
                 if (config[currentStackSymbol] !== undefined) {
                     if (config[currentStackSymbol][currentToken] !== undefined) {
                         var production = config[currentStackSymbol][currentToken];
-                        console.log(currentStackSymbol + " -> " + production);
+                        output.push(currentStackSymbol + " -> " + production);
                         if (typeof(production) == 'object') {
                             production = production.slice();//бам на нах сука горит ебучий джc почему никто не сказал что массивы так не копируются
                             var newStack = [];
                             while (production.length) {
                                 newStack.push(production.pop());
                             }
-                            localAst.push({"type" : currentStackSymbol,
-                                            "body" : walk(newStack)});
+                            if (config[currentStackSymbol]["<<dont_recursion_reversal>>"]) {
+                                var inw = walk(newStack);
+                                for (var i in inw) {
+                                    localAst.push(inw[i])
+                                }
+                            }
+                            else if (config[currentStackSymbol]["<<put_in_tree>>"]) {
+                                walk(newStack);
+                                localAst.push({"type"  : currentStackSymbol,
+                                               "value" : arrayOfTokens[currentIndex-1]});
+
+                            }
+                            else {
+                                localAst.push({"type" : currentStackSymbol,
+                                               "body" : walk(newStack)});
+                            }
                         }
                         else {
                             console.log("Ошибка: неверное правило. Правая часть не является массивом: " + currentStackSymbol + " " + production);
@@ -80,9 +99,8 @@ export function parser(arrayOfTokens, config)
         var ast = walk(start);
     }
     catch (error) {
-        console.log(config);
-        return error;
+        ast = error;
     }
-    
+    console.log(output);
     return ast;
 }

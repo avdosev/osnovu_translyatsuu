@@ -37,11 +37,11 @@
         "regexp": "^((\".*?\"))",
         "link": "arrayOfConst"
     },
-    "real_digit_const": {
+    "real_dig_const": {
         "regexp": "^(\\d*\\.\\d+)\\b",
         "link": "arrayOfConst"
     },
-    "int_digit_const": {
+    "int_dig_const": {
         "regexp": "^(\\d+)\\b",
         "link": "arrayOfConst"
     },
