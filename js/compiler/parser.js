@@ -8,6 +8,11 @@ export function parser(arrayOfTokens, config)
     "..." - терминал - просто токен
     "<...>" - нетерминал - он строит наше дерево
     "<<...>>" - сверхнетерминал - он говорит то как построится наше дерево, можно сказать он настраивает наш парсер
+    *//*
+    типо документация для сверхнетерминалов
+    "<<put_in_tree>>" - закидывает айди или нум как ветку со значением
+    "<<dont_recursion_reversal>>" - не разворачивает рекурсию
+    "<<dont_push_if_empty>>" - не кидает если получилось тело ветки окозалось пустым
     */
     function walk(stack) {
         var currentStackSymbol;
@@ -18,7 +23,7 @@ export function parser(arrayOfTokens, config)
             currentToken = arrayOfTokens[currentIndex];
             currentStackSymbol = stack.pop();
 
-            if (currentStackSymbol[0]!='<' || (currentStackSymbol.length == 1 && currentStackSymbol[0]=='<')) {// если текущий символ – терминал
+            if (!(currentStackSymbol[0]=='<' && currentStackSymbol[currentStackSymbol.length-1]=='>' && currentStackSymbol.length != 2)) {// если текущий символ – терминал
                 if (currentToken == currentStackSymbol ||
                         currentToken[0] == 'ident' && currentStackSymbol == 'id'||
                         currentToken[0] == 'hex_dig_const' && currentStackSymbol == 'num'||
@@ -70,8 +75,12 @@ export function parser(arrayOfTokens, config)
 
                             }
                             else {
+                                var if_empty = config[currentStackSymbol]["<<dont_push_if_empty>>"];
                                 localAst.push({"type" : currentStackSymbol,
                                                "body" : walk(newStack)});
+                                if (if_empty && localAst[localAst.length-1].body.length == 0) {
+                                    localAst.pop();
+                                }
                             }
                         }
                         else {

@@ -1,5 +1,6 @@
 export function lexer(codeText, lexTable) {    
     var tokens = [];
+    var output = [];
     var arrayOfConst = [];
     var arrayOfIdent = [];
     var ErrorList = [];
@@ -59,6 +60,7 @@ export function lexer(codeText, lexTable) {
                     }
                 }
                 // добавить элемент в массив
+                output.push(`Идентификатор: ${match}, Токен: ${key}`);
                 tokens.push(match);
                 break;
             }
@@ -67,6 +69,8 @@ export function lexer(codeText, lexTable) {
         //на случай если буду редачить таблицу лексем и сделаю косяк
         if (match == null) { console.error("you regexp don`t ready"); console.error(codeText); return; }
     }
+    console.log("как проходил лексический анализ:");
+    console.log(output);
     if (ErrorList.length == 0)
         return [tokens, arrayOfIdent, arrayOfConst];
     else 
