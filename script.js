@@ -1,6 +1,8 @@
 import { getDataFromServer } from "./js/server-helper.js"
 import { compiler } from "./js/compiler/compiler.js"
-import { printProductionTable, printNontermsTable, printTermsTable } from "./js/kyrsach_generation/kyrsuch_print.js";
+import { lexer } from "./js/compiler/lexer.js"
+import { parser } from "./js/compiler/parser.js"
+import { printProductionTable, printNontermsTable, printTermsTable, printDrevoVuvoda } from "./js/kyrsach_generation/kyrsuch_print.js";
 
 
 document.addEventListener('DOMContentLoaded', main);
@@ -17,6 +19,7 @@ function main() {
                 //print kyrsuch
                 printProductionTable(grammarTable); printNontermsTable(grammarTable); printTermsTable(grammarTable);
                 document.querySelector('code.javascript-language').innerHTML = out;
+                printDrevoVuvoda(parser(lexer(document.querySelector('code.eiffel-language').textContent, lexTable)[0], grammarTable));
             }
         }
     }
