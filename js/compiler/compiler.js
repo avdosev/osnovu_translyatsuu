@@ -6,7 +6,7 @@ import { codeGenerator } from "./code_generator.js";
 export function compiler(input, lexTable, grammarTableInputLanguage, codeGeneratorTableOutputLanguage) {
     let tokens = lexer(input, lexTable);
     console.log(tokens);
-    let ast    = parser(tokens[0], grammarTableInputLanguage);
+    let ast    = parser(tokens, grammarTableInputLanguage);
     console.log("получившиеся абстрактное синтаксическое дерево:");
     console.log(ast);
     let newAst = transformer(ast);

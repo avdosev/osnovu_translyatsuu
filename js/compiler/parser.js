@@ -1,5 +1,6 @@
-export function parser(arrayOfTokens, config)
+export function parser(tokens, config, outputType = false)
 {
+    var arrayOfTokens = tokens[0];
     var start = ["<программа>"];
     var currentIndex = 0;
     var output = [];
@@ -13,6 +14,7 @@ export function parser(arrayOfTokens, config)
     "<<put_in_tree>>" - закидывает айди или нум как ветку со значением
     "<<dont_recursion_reversal>>" - не разворачивает рекурсию
     "<<dont_push_if_empty>>" - не кидает если получилось тело ветки окозалось пустым
+    "<<EMPTY PRODUCTIONS>>" - тупо удобство, в норм граматике должно быть много пустых а в формате джсын не оч писать для каждого терминала
     */
     function walk(stack) {
         var currentStackSymbol;
@@ -30,10 +32,15 @@ export function parser(arrayOfTokens, config)
                         currentToken[0] == 'real_dig_const' && currentStackSymbol == 'num'||
                         currentToken[0] == 'int_dig_const' && currentStackSymbol == 'num'||
                         currentToken[0] == 'string_constant' && currentStackSymbol == 'num') {
-                        if (currentToken != currentStackSymbol)
+                        if (currentToken != currentStackSymbol) {
                             output.push(currentStackSymbol + " -> " + currentToken[1]);
-                        else 
+                            if (outputType) localAst.push((currentToken[0] == 'ident' && currentStackSymbol == 'id' ? tokens[1] : tokens[2])[currentToken[1]]);
+                        }
+                        else {
                             output.push(currentToken);
+                            if (outputType) localAst.push(currentStackSymbol);
+                        }
+                    
                     currentIndex += 1;
                 }
                 else {
@@ -53,8 +60,9 @@ export function parser(arrayOfTokens, config)
                     currentToken = 'num';
 
                 if (config[currentStackSymbol] !== undefined) {
-                    if (config[currentStackSymbol][currentToken] !== undefined) {
+                    if (config[currentStackSymbol][currentToken] !== undefined || (config[currentStackSymbol]["<<EMPTY PRODUCTIONS>>"] !== undefined && config[currentStackSymbol]["<<EMPTY PRODUCTIONS>>"].indexOf(currentToken) != -1)) {
                         var production = config[currentStackSymbol][currentToken];
+                        if (production === undefined) production = [];
                         output.push(currentStackSymbol + " -> " + production);
                         if (typeof(production) == 'object') {
                             production = production.slice();//бам на нах сука горит ебучий джc почему никто не сказал что массивы так не копируются
@@ -70,8 +78,13 @@ export function parser(arrayOfTokens, config)
                             }
                             else if (config[currentStackSymbol]["<<put_in_tree>>"]) {
                                 walk(newStack);
+                                if (!outputType)
                                 localAst.push({"type"  : currentStackSymbol,
                                                "value" : arrayOfTokens[currentIndex-1]});
+                                else { 
+                                    localAst.push({"type" : arrayOfTokens[currentIndex-1][0] == 'ident' ? 'id' : 'num',
+                                                  "body"  : (arrayOfTokens[currentIndex-1][0] == 'ident' ? tokens[1] : tokens[2])[arrayOfTokens[currentIndex-1][1]]});//хз че подумает чувак который впервые это увидит
+                                }
 
                             }
                             else {

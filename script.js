@@ -19,7 +19,7 @@ function main() {
                 //print kyrsuch
                 printProductionTable(grammarTable); printNontermsTable(grammarTable); printTermsTable(grammarTable);
                 document.querySelector('code.javascript-language').innerHTML = out;
-                printDrevoVuvoda(parser(lexer(document.querySelector('code.eiffel-language').textContent, lexTable)[0], grammarTable));
+                printDrevoVuvoda(parser(lexer(document.querySelector('code.eiffel-language').textContent, lexTable), grammarTable, true));
             }
         }
     }

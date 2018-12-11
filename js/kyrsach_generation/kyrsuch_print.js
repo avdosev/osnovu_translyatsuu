@@ -8,7 +8,7 @@ export function printProductionTable (config) {
         var temp = [], br = false;
         for (var needed_term in product)
         {
-            if (!product[needed_term] || needed_term =="EMPTY PRODUCTIONS")
+            if (!product[needed_term] || needed_term =="<<EMPTY PRODUCTIONS>>")
             {
                 if (temp_string.indexOf("ε")==-1)
                     temp.push("ε");
@@ -63,20 +63,28 @@ function getStringTree(tree)
     {
         var text = "";
         if (node !== undefined)
-        {
-            if (node.body == [])
+        {//Литэвкэн ты дэвэлен? елс иф топ, да?
+            if (node.body != undefined && node.body.length == 0)
                 text += node.type + "(ε)";
-            else if (node.type == '(')
-                text += '❲'; // технически, это не скобка, так что парсер на основе скобок работает корректно
-            else if (node.type == ')')
-                text += '❳';
             else if (node.type == "id" || node.type == "num")
-                text += node.body[1];
-            else if (typeof(node.body)=="string")
+                text += node.body;
+            else if (typeof(node) == "string") {
+                if (node == '(')
+                    text += '❲'; // технически, это не скобка, так что парсер на основе скобок работает корректно
+                else if (node == ')')
+                    text += '❳'; 
+                else if (node == ',')
+                    text += '،'
+                else
+                    text += node;
+            }
+            else if (typeof(node.body) == "string")
                 text += node.type;
             else if (typeof(node.body) == "object")
             {
-                text += node.type + '(' + recursiveStrTree(node.body[0]);
+                var insert = node.type;
+                if (insert.match(/<[a-zA-Z]+>/) !== null) {insert = "&#60" + insert.substring(1,insert.length-1) + "&#62";};//да это костыль ну и шо
+                text += insert + '(' + recursiveStrTree(node.body[0]);
 
                 if (node.body[1])
                 {
@@ -97,13 +105,57 @@ export function printDrevoVuvoda(tr, out_id = 'run_out_id')
 {
 
     drawTree(getStringTree(tr));
-
     function drawTree(t)
     {
-        document.getElementById(out_id).innerHTML = Tree.getSVG(Tree.parse(t));
+        document.getElementById(out_id).innerHTML = rewriteDiagonalLines(Tree.getSVG(Tree.parse(t)));
     }
 
 }
+
+/****************************************************************************************
+* Возвращает код дерева в svg формате
+*/
+export function getTreeAsText()
+{
+    return document.getElementById('run_out_id').innerHTML;
+}
+
+/****************************************************************************************
+* превращает все диагональные линии в вертикальные и горизонтальные
+*/
+function rewriteDiagonalLines(tree)
+{
+    tree = tree.slice();
+    var linesArray = tree.match(/<line x1="\d+" y1="\d+" x2="\d+" y2="\d+".*?\/\>/g)
+    for (var line in linesArray)
+    {
+        if (linesArray[line] != null)
+        {
+            var coordinates = linesArray[line].match(/"([0-9]+)"/g)
+            if (coordinates != null)
+            {
+
+                var x1 = +(coordinates[0].replace(/"/g, ''));
+                var y1 = +(coordinates[1].replace(/"/g, ''));
+                var x2 = +(coordinates[2].replace(/"/g, ''));
+                var y2 = +(coordinates[3].replace(/"/g, ''));
+                if (x1 != x2)
+                {
+                    // заменить текущую диагональ на две вертикали и одну горизонталь
+                    var y3 = (y1+y2)/2;
+                    var newLine = 
+                    '<line x1="'+ x1 +'" y1="'+ y1 +'" x2="'+ x1 +'" y2="'+ y3 +'" stroke="black" style="stroke-width:1px;"/>'+
+                    '<line x1="'+ x2 +'" y1="'+ y2 +'" x2="'+ x2 +'" y2="'+ y3 +'" stroke="black" style="stroke-width:1px;"/>'+
+                    '<line x1="'+ x1 +'" y1="'+ y3 +'" x2="'+ x2 +'" y2="'+ y3 +'" stroke="black" style="stroke-width:1px;"/>';
+                    tree = tree.replace(linesArray[line], newLine);
+                }
+            }
+        }
+    }
+    return tree;
+}
+
+
 //я не разобрался как подключить по нормальному((
 
 'use strict';
@@ -605,11 +657,11 @@ Tree.chngeChk = function (tr)
 * При стартовом запуске r отсутствует
 */
 Tree.svg = { 
-   h    : 20,             // высота ящика для узла
-   w    : 20,             // минимальная ширина ящика для узла
+   h    : 30,             // высота ящика для узла
+   w    : 30,             // минимальная ширина ящика для узла
    r    : 5,              // радиус скругления ящика
    chW  : 10,             // ширина буквы 
-   skpY: 30,              // отступить от имени узла 
+   skpY: 60,              // отступить от имени узла 
    skpX: 10,              // отступить от соседнего узла вправо
    cFill: "#FFC",         // цвет заливки
    cText: "blue",         // цвет текста
