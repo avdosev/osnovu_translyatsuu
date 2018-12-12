@@ -154,6 +154,19 @@ function rewriteDiagonalLines(tree)
     }
     return tree;
 }
+// вообще-то было бы клево это вставить в index, но оно не вставляется
+/****************************************************************************************
+*как то связано с получением дерева из хтмл хз що це такое
+*/
+export function getHTML() 
+{
+    return '<!DOCTYPE html> <!-- html 5 --> <html lang="en"> <head> <meta charset="UTF-8">'+
+    '<meta name="viewport" content="width=device-width, initial-scale=1.0">'+
+    '<meta http-equiv="X-UA-Compatible" content="ie=edge">' +
+    '</head><body><p><center><div id="run_out_id" >'+
+    document.getElementById('run_out_id').innerHTML +
+    "</center></p></body></html>";
+}
 
 
 //я не разобрался как подключить по нормальному((

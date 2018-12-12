@@ -8,7 +8,7 @@
         <script src="script.js" type="module"></script>
         <link rel="stylesheet" href="style.css"> 
     </head>
-    <body>
+    <body link="white" vlink="white" alink="#4d7198">
         <h1>Курсач</h1>
         <h3>Eiffel code:</h3>
         <pre><code class="eiffel-language">
@@ -16,11 +16,15 @@
   create
     main
   feature
-    main
+    main(where: INTEGER; what: INTEGER)
     local
-      i : INTEGER
+      i, b : INTEGER;
+      f, d, g : STRING;
       do
-        i := 0;
+        i := - + - + - (0 - - 1);
+        if i = -1 then
+          puk("puk\n");
+        end
         print("i before cycle: ", i);
         until
           i >= 10;
@@ -38,7 +42,11 @@
           end 
           end
         end
-        
+          
+      end
+    puk(pak : STRING)
+      do
+        print(pak);
       end
   end
         </code></pre>
@@ -47,8 +55,19 @@
         </code></pre>
 
         
-        <div id="run_out_id" ></div>
-        
+        <a href=#>Скачать html-файл с деревом</a>
+        <center>
+            <script type="module">
+                import { getHTML } from "./js/kyrsach_generation/kyrsuch_print.js";
+                document.getElementsByTagName('a')[0].onclick = function() {
+                    var text = getHTML();
+                    var csvData = 'data:application/txt;charset=utf-8,' + encodeURIComponent(text);
+                    this.href = csvData;
+                    this.target = '_blank';
+                    this.download = 'tree.html';
+                }
+            </script>    
         </p>
+        <div id="run_out_id" ></div>
     </body>
 </html>
