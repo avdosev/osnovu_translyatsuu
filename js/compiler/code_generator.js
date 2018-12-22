@@ -1,9 +1,10 @@
 export function codeGenerator(derevo, degenerationTable, arrayOfIdent, arrayOfConst) {
     //ну шо генератор
-    function generatorStr(obj) {//fix
+    function generatorStr(obj) {
         var str = '';
         var ptab = degenerationTable[obj["type"]];
         if (ptab) {
+            if (ptab["before"]) str += ptab["before"];
             if (obj.value) {
                 if (obj.type == "<value_id>") {
                     str += `${arrayOfIdent[obj.value[1]]}`;
@@ -14,11 +15,8 @@ export function codeGenerator(derevo, degenerationTable, arrayOfIdent, arrayOfCo
                     throw 0;
                 }
             }
-            else {
-               str += ptab["before"];
-               str += walk(obj.body);
-               str += ptab["after"];
-            }
+            if (obj.body) str += walk(obj.body);
+            if (ptab["after"]) str += ptab["after"];
         }
         else {
             str += walk(obj.body);

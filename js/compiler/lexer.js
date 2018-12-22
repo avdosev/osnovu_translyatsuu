@@ -71,8 +71,5 @@ export function lexer(codeText, lexTable) {
     }
     console.log("как проходил лексический анализ:");
     console.log(output);
-    if (ErrorList.length == 0)
-        return [tokens, arrayOfIdent, arrayOfConst];
-    else 
-        console.log(ErrorList);
+    return [tokens, arrayOfIdent, arrayOfConst, ErrorList];
 }
