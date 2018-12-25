@@ -1,7 +1,6 @@
 {
     "<программа>" : {
-        "before" : "function main_function() {\nfunction print() { for (var i in arguments) console.log(arguments[i]); }//шоб никто не сказал что нет функции принт\nmain();\n",
-        "after" : "}"
+        "before" : "function print() { for (var i in arguments) console.log(arguments[i]); }//шоб никто не сказал что нет функции принт\n"
     },
     "<блок_id>": {
         "before" : " "
@@ -32,7 +31,11 @@
         "before" : ", "
     },
     "<блок если>": {
-        "after" : "}\n"
+        "before" : "if",
+        "pre_value" : "(",
+        "post_value" : ") ",
+        "pre_body" : "{\n",
+        "post_body" : "}\n"
     },
     "<действие>": { 
         "after" : ";\n"
@@ -50,15 +53,9 @@
     },
     "<блок цикла с предусловием>":{
         "before" : "while (true) {\n",
+        "pre_value" : "if (",
+        "post_value" : ") { break; }\n",
         "after" : "}\n"
-    },
-     "<предусловие>":{
-        "before" : "if (",
-        "after" : ") {\n"
-    },
-    "<brek>" : {
-        "before" : "break;\n}",
-        "after" : "\n"
     },
      "<больше>":{
         "before" : " > "

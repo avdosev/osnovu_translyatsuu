@@ -16,33 +16,18 @@
   create
     main
   feature
-    main(where: INTEGER; what: INTEGER)
-    local
-      i, b : INTEGER;
-      f, d, g : STRING;
+    main()
       do
-        i := - + - + - (0 - - 1);
+        i := - 1;
         if i = -1 then
           puk("puk\n");
         end
-        print("i before cycle: ", i);
-        until
-          i >= 10;
+        until 
+          i >= 100;
         loop
-          print("raz raz raz eto xardbase");
-          i := i + 1;
+          i := i + 10;
+          print(i);
         end
-        print("i after cycle:", i);
-        if i /= 10 then
-          print("oblom");
-        else if i \\ 5 = 0 then
-          print("xop");
-          if i = 10 then
-            print("top xop");
-          end 
-          end
-        end
-          
       end
     puk(pak : STRING)
       do

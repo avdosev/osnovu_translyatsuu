@@ -5,6 +5,7 @@
 "<<...>>" - сверхнетерминал - он говорит то как построится наше дерево, можно сказать он настраивает наш парсер
 типо документация для сверхнетерминалов
 "<<put_in_tree>>" - закидывает айди или нум как ветку со значением
+"<<value>>" - оно нужно для того чтоб  и предыдущее но только для нетерминалов
 "<<dont_recursion_reversal>>" - не разворачивает рекурсию
 "<<dont_push_if_empty>>" - не кидает если получилось тело ветки окозалось пустым
 "<<EMPTY PRODUCTIONS>>" - тупо удобство, в норм граматике должно быть много пустых а в формате джсын не оч писать для каждого терминала
@@ -66,11 +67,9 @@ export function parser(tokens, config, outputType = false)
                         output.push(currentStackSymbol + " -> " + production);
                         if (typeof(production) == 'object') {
                             production = production.slice();//бам на нах сука горит ебучий джc почему никто не сказал что массивы так не копируются
-                            var newStack = [];
-                            while (production.length) {
-                                newStack.push(production.pop());
-                            }
-                            if (config[currentStackSymbol]["<<dont_recursion_reversal>>"]) {
+                            var newStack = production.reverse();
+
+                            if (config[currentStackSymbol]["<<dont_recursion_reversal>>"] && !config[currentStackSymbol]["<<value>>"]) {
                                 var inw = walk(newStack);
                                 for (var i in inw) {
                                     localAst.push(inw[i])
@@ -86,6 +85,25 @@ export function parser(tokens, config, outputType = false)
                                                   "body"  : (arrayOfTokens[currentIndex-1][0] == 'ident' ? tokens[1] : tokens[2])[arrayOfTokens[currentIndex-1][1]]});//хз че подумает чувак который впервые это увидит
                                 }
 
+                            } else if (config[currentStackSymbol]["<<value>>"]) {
+                                //технически у этого огромный потанцевал и идея сверхнетерминалов охеренна
+                                //можно довести до того что наше дерево будет настолько ветвистым что оно будет ветвистее реального дерева
+                                //ток хузе как надо будет ебланить кодогенератор тогда
+                                let crs = currentStackSymbol;
+                                let body_ast = [], value_ast = [];
+                                body_ast = walk(newStack.slice(newStack.indexOf("<<value>>")+1))
+                                value_ast = walk(config[crs]["<<value>>"].slice().reverse())
+                                if (!outputType) {
+                                    body_ast = body_ast.concat(walk(newStack.slice(0, newStack.indexOf("<<value>>"))))
+                                    localAst.push({"type" : crs,
+                                                   "value": value_ast,
+                                                   "body" : body_ast});
+                                }
+                                else {
+                                    body_ast = body_ast.concat(value_ast, walk(newStack.slice(0, newStack.indexOf("<<value>>"))));
+                                    localAst.push({"type" : currentStackSymbol,
+                                                   "body" : body_ast});
+                                }
                             }
                             else {
                                 var if_empty = config[currentStackSymbol]["<<dont_push_if_empty>>"];
