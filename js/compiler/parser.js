@@ -12,7 +12,8 @@
 */
 export function parser(tokens, config, outputType = false)
 {
-    var arrayOfTokens = tokens[0];
+    var arrayOfTokens = tokens[0].slice();
+    arrayOfTokens.push("<<eps>>");//это окозалось полезным
     var start = ["<программа>"];
     var currentIndex = 0;
     var output = [];
