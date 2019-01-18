@@ -1,0 +1,28 @@
+<!DOCTYPE html> <!-- html 5 -->
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Traspiler</title>
+        <link rel="stylesheet" href="style.css"> 
+    </head>
+    <body link="white" vlink="white" alink="#4d7198">
+        <input id="input" size="20" maxlength="100" pattern="[01]+"></input>
+        <div id = "res"></div>
+        <script type="module">
+        import { getDataFromServer } from "./js/server-helper.js"
+        import { lexer } from "./js/compiler/lexer.js"
+        import { parser } from "./js/compiler/LLtreeparser.js"
+
+        window.oninput = () => {
+            var value = document.getElementById('input').value;
+            getDataFromServer("./config/101.json", (lexTable) => {
+                getDataFromServer("./config/grammar_test.json", (grammarTable) => {
+                    document.getElementById('res').innerHTML = parser(lexer(value, lexTable), grammarTable);
+                });  
+            });
+        }   
+        </script>
+    </body>
+</html>
